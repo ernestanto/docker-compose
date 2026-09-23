@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -19,7 +20,9 @@ pipeline {
 
         stage('Maven Build') {
             steps {
-                sh 'mvn clean package'
+                dir('react-java-mysql/backend') {
+                    sh 'mvn clean package'
+                }
             }
         }
 
@@ -27,7 +30,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Checking generated JAR files..."
-                    find . -path "*/target/*.jar" -type f
+                    find react-java-mysql/backend/target -name "*.jar" -type f
                 '''
             }
         }
