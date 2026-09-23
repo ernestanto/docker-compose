@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Check Java and Maven') {
+            steps {
+                sh '''
+                    java -version
+                    mvn -version
+                '''
+            }
+        }
+
+        stage('Maven Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Verify Build Artifacts') {
+            steps {
+                sh '''
+                    echo "Checking generated JAR files..."
+                    find . -path "*/target/*.jar" -type f
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Maven build completed successfully!'
+        }
+
+        failure {
+            echo 'Maven build failed. Check the console output for errors.'
+        }
+
+        always {
+            echo 'Build pipeline finished.'
+        }
+    }
+}
